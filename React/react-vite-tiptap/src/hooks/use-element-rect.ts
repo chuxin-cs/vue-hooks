@@ -58,8 +58,10 @@ export function useElementRect({
 }: ElementRectOptions = {}): RectState {
   const [rect, setRect] = useState<RectState>(initialRect)
 
+  const shouldTrack = enabled && isClientSide()
+
   const getTargetElement = useCallback((): Element | null => {
-    if (!enabled || !isClientSide()) return null
+    if (!shouldTrack) return null
 
     if (!element) {
       return document.body
@@ -74,11 +76,11 @@ export function useElementRect({
     }
 
     return element
-  }, [element, enabled])
+  }, [element, shouldTrack])
 
   const updateRect = useThrottledCallback(
     () => {
-      if (!enabled || !isClientSide()) return
+      if (!shouldTrack) return
 
       const targetElement = getTargetElement()
       if (!targetElement) {
@@ -99,20 +101,17 @@ export function useElementRect({
       })
     },
     throttleMs,
-    [enabled, getTargetElement],
+    [getTargetElement, shouldTrack],
     { leading: true, trailing: true }
   )
 
   useEffect(() => {
-    if (!enabled || !isClientSide()) {
-      setRect(initialRect)
-      return
-    }
+    if (!shouldTrack) return
 
     const targetElement = getTargetElement()
     if (!targetElement) return
 
-    updateRect()
+    window.requestAnimationFrame(updateRect)
 
     const cleanup: (() => void)[] = []
 
@@ -136,11 +135,10 @@ export function useElementRect({
 
     return () => {
       cleanup.forEach((fn) => fn())
-      setRect(initialRect)
     }
-  }, [enabled, getTargetElement, updateRect, useResizeObserver])
+  }, [getTargetElement, shouldTrack, updateRect, useResizeObserver])
 
-  return rect
+  return shouldTrack ? rect : initialRect
 }
 
 /**

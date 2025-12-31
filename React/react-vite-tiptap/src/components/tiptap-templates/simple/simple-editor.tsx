@@ -53,6 +53,10 @@ import {
 import { MarkButton } from "@/components/tiptap-ui/mark-button"
 import { TextAlignButton } from "@/components/tiptap-ui/text-align-button"
 import { UndoRedoButton } from "@/components/tiptap-ui/undo-redo-button"
+import {
+  SlashCommand,
+  SlashDropdownMenu,
+} from "@/components/tiptap-ui/slash-dropdown-menu"
 
 // --- Icons ---
 import { ArrowLeftIcon } from "@/components/tiptap-icons/arrow-left-icon"
@@ -221,6 +225,7 @@ export function SimpleEditor() {
       Superscript,
       Subscript,
       Selection,
+      SlashCommand,
       ImageUploadNode.configure({
         accept: "image/*",
         maxSize: MAX_FILE_SIZE,
@@ -246,6 +251,7 @@ export function SimpleEditor() {
   return (
     <div className="simple-editor-wrapper">
       <EditorContext.Provider value={{ editor }}>
+        <SlashDropdownMenu />
         <Toolbar
           ref={toolbarRef}
           style={{
