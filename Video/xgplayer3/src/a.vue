@@ -27,8 +27,8 @@
     play(document.getElementById("app1"),'http://127.0.0.1:8888/live/test/index.m3u8')
   },3000)
 
-  function play(container,url){
-      const player =  new window.Jessibuca({
+  function play(container: HTMLElement | null, url: string){
+      const player =  new (window as any).Jessibuca({
           container: container,
           isFlv: true,
           videoBuffer: 0.2, // 缓冲时长
@@ -50,7 +50,7 @@
         });
         
    
-      player.play(url).catch((err) => {
+      player.play(url).catch((err: unknown) => {
         console.log(err);
       })
   }

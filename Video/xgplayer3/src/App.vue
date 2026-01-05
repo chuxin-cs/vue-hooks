@@ -22,11 +22,16 @@
     <div id="mse20"></div>
     <div id="mse21"></div>
     <!-- <APlayer/> -->
+
+
+    <button @click="playHls()">HLS播放</button>
+    <button @click="playFlv()">FLV播放</button>
   </div>
 </template>
 
 <script setup lang="ts">
 // import APlayer from "./a.vue"
+import axios from "axios"
 import Player from 'xgplayer';
 import 'xgplayer/dist/index.min.css';
 
@@ -35,9 +40,34 @@ import HlsPlugin from 'xgplayer-hls'
 
 
 // flv的格式在10多个宫格中会出现卡顿 我现在测试一下 hls
-setTimeout(() => {
-  let player = new Player({
-    id: 'mse1',
+
+// ==================== flv
+function playFlv(){
+  // 
+  axios
+    .get("http://127.0.0.1:8080/index/api/addStreamProxy", {
+      params: {
+        url: "",
+        stream: "test",
+        app: "live",
+        vhost: "__defaultVhost__",
+        secret: "123456",
+
+        enable_hls: 0,
+        enable_mp4: 0,
+        enable_rtsp: 0,
+        enable_rtmp: 0
+      },
+    })
+    .then(({ data }) => {
+      console.log(data)
+      plays("mse1")
+    })
+}
+
+function plays(id: string){
+ new Player({
+    id: id,
     
     // 西瓜播放器的视频
     // url: 'http://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/flv/xgplayer-demo-720p.flv',
@@ -46,20 +76,21 @@ setTimeout(() => {
     // url: '../public/flv/202512241446_aac.flv',
 
     // go flv-live-server 起的服务
-    url:'http://localhost:8080/live.flv',
+    // url:'http://localhost:8080/live.flv',
     // isLive: true,
+
+    // url:'',
 
     height: '200px',
     width: '200px',
     plugins: [FlvPlugin],
   });
+}
 
 
-}, 30000000);
-
-
-setTimeout(() => {
-  play("mse1")
+// ==================== hls
+function playHls(){
+ play("mse1")
   play("mse2")
   play("mse3")
   play("mse4")
@@ -80,10 +111,8 @@ setTimeout(() => {
   play("mse19")
   play("mse20")
   play("mse21")
-}, 3000);
-
-
-function play(id){
+}
+function play(id: string){
   new Player({
     id,
     url:'http://127.0.0.1:8888/live/test/index.m3u8',
