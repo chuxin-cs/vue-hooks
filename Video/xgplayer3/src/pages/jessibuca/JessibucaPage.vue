@@ -6,30 +6,20 @@
       <button @click="stop" :disabled="!player">停止</button>
     </div>
 
-    <div class="grid">
-      <div v-for="id in ids" :key="id" :id="id"></div>
-    </div>
+    <div style="height: 600px;width: 600px;" id="app1"></div>
+    
   </div>
 </template>
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue"
 
-const ids = Array.from({ length: 9 }, (_, i) => `app${i + 1}`)
-
-const url = ref("http://127.0.0.1:8888/live/test/index.m3u8")
+// http://localhost:3333/live/013800138999-2.flv
+const url = ref('')
 const loading = ref(false)
 const player = ref<any>(null)
 
 const getJessibuca = () => (window as any)?.Jessibuca
-
-const waitJessibuca = async () => {
-  const deadline = Date.now() + 8000
-  while (Date.now() < deadline) {
-    if (getJessibuca()) return
-    await new Promise((r) => setTimeout(r, 100))
-  }
-}
 
 const stop = () => {
   const p = player.value
@@ -42,9 +32,11 @@ const stop = () => {
 const start = async () => {
   loading.value = true
   try {
-    await waitJessibuca()
     const Jessibuca = getJessibuca()
-    if (!Jessibuca) return
+    if (!Jessibuca) {
+      alert('请先加载Jessibuca');
+      return
+    }
 
     stop()
     const container = document.getElementById("app1")
