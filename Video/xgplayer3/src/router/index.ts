@@ -27,6 +27,16 @@ const router = createRouter({
       name: "jessibuca",
       component: () => import("../pages/jessibuca/JessibucaPage.vue"),
     },
+    {
+      path: "/jessibuca-grid-9",
+      name: "jessibuca-grid-9",
+      component: () => import("../pages/jessibuca/JessibucaGrid9Page.vue"),
+    },
+    {
+      path: "/jessibuca-grid-16",
+      name: "jessibuca-grid-16",
+      component: () => import("../pages/jessibuca/JessibucaGrid16Page.vue"),
+    },
   ],
 })
 

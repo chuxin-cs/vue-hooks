@@ -6,6 +6,8 @@
         <router-link to="/flv" class="link">FLV</router-link>
         <router-link to="/flv-grid" class="link">FLV 9宫格</router-link>
         <router-link to="/jessibuca" class="link">Jessibuca</router-link>
+        <router-link to="/jessibuca-grid-9" class="link">Jessibuca 9宫格</router-link>
+        <router-link to="/jessibuca-grid-16" class="link">Jessibuca 16宫格</router-link>
       </nav>
     </header>
     <main class="main">
