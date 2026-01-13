@@ -18,6 +18,11 @@ const router = createRouter({
       component: () => import("../pages/flv/FlvPage.vue"),
     },
     {
+      path: "/flv-grid",
+      name: "flv-grid",
+      component: () => import("../pages/flv/FlvGridPage.vue"),
+    },
+    {
       path: "/jessibuca",
       name: "jessibuca",
       component: () => import("../pages/jessibuca/JessibucaPage.vue"),

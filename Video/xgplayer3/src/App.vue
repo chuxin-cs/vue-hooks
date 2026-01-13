@@ -4,6 +4,7 @@
       <nav class="nav">
         <router-link to="/hls" class="link">HLS</router-link>
         <router-link to="/flv" class="link">FLV</router-link>
+        <router-link to="/flv-grid" class="link">FLV 9宫格</router-link>
         <router-link to="/jessibuca" class="link">Jessibuca</router-link>
       </nav>
     </header>
