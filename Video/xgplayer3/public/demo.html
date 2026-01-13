@@ -38,7 +38,6 @@
 
         url.host = domains[(i - 1) % domains.length]
         url.pathname = `${basePath}-${i}${extra}${suffix}`
-        console.log(url.toString())
         results.push(url.toString())
       }
       return results.join(" ")

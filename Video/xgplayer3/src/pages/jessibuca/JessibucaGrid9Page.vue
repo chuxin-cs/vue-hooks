@@ -174,7 +174,7 @@ onBeforeUnmount(() => {
 
 .player {
   width: 100%;
-  height: 200px;
+  height: 400px;
 }
 </style>
 
