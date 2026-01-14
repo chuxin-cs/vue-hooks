@@ -36,6 +36,7 @@
       background-color: #f8f9fa;
       border: 1px dashed #ccc;
       cursor: text;
+      margin-bottom: 8px; /* 给复制按钮留出间距 */
     }
     button {
       padding: 10px 20px;
@@ -49,9 +50,33 @@
     button:hover {
       background-color: #0056b3;
     }
+    /* 复制按钮样式区分 */
+    #copyBtn {
+      background-color: #28a745;
+    }
+    #copyBtn:hover {
+      background-color: #218838;
+    }
     .error {
       color: #dc3545;
       margin-top: 10px;
+    }
+    /* 提示信息样式 */
+    .tip {
+      margin-top: 8px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      display: none;
+    }
+    .success-tip {
+      color: #155724;
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+    }
+    .fail-tip {
+      color: #721c24;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
     }
   </style>
 </head>
@@ -70,6 +95,10 @@
     <div class="form-group" style="margin-top: 20px;">
       <label for="resultUrls">生成结果（可直接复制）：</label>
       <textarea id="resultUrls" readonly placeholder="生成的多通道链接会显示在这里"></textarea>
+      <!-- 新增复制按钮 -->
+      <button id="copyBtn">复制生成结果</button>
+      <!-- 复制提示信息 -->
+      <div id="copyTip" class="tip"></div>
     </div>
     <div class="error" id="errorMsg"></div>
   </div>
@@ -81,6 +110,9 @@
       const generateBtn = document.getElementById('generateBtn');
       const resultUrlsEl = document.getElementById('resultUrls');
       const errorMsgEl = document.getElementById('errorMsg');
+      // 新增复制按钮和提示元素
+      const copyBtn = document.getElementById('copyBtn');
+      const copyTipEl = document.getElementById('copyTip');
 
       function generateChannelUrls(inputUrl, count) {
         const domains = [
@@ -109,9 +141,56 @@
         return results.join('\n');
       }
 
+      // 新增复制功能函数
+      function copyResultContent() {
+        // 清空之前的提示
+        copyTipEl.style.display = 'none';
+        copyTipEl.className = 'tip';
+        
+        // 获取要复制的内容
+        const content = resultUrlsEl.value.trim();
+        
+        // 检查内容是否为空
+        if (!content) {
+          copyTipEl.textContent = '暂无内容可复制，请先生成通道链接';
+          copyTipEl.className = 'tip fail-tip';
+          copyTipEl.style.display = 'block';
+          // 3秒后隐藏提示
+          setTimeout(() => {
+            copyTipEl.style.display = 'none';
+          }, 3000);
+          return;
+        }
+
+        // 使用剪贴板API复制内容
+        navigator.clipboard.writeText(content)
+          .then(() => {
+            // 复制成功提示
+            copyTipEl.textContent = '复制成功！内容已保存到剪贴板';
+            copyTipEl.className = 'tip success-tip';
+            copyTipEl.style.display = 'block';
+          })
+          .catch(err => {
+            // 复制失败提示（兼容老浏览器）
+            copyTipEl.textContent = '复制失败，请手动选中复制！';
+            copyTipEl.className = 'tip fail-tip';
+            copyTipEl.style.display = 'block';
+            // 备选方案：手动选中内容
+            resultUrlsEl.select();
+            document.execCommand('copy');
+          })
+          .finally(() => {
+            // 3秒后自动隐藏提示
+            setTimeout(() => {
+              copyTipEl.style.display = 'none';
+            }, 3000);
+          });
+      }
+
       generateBtn.addEventListener('click', function() {
         resultUrlsEl.value = '';
         errorMsgEl.textContent = '';
+        copyTipEl.style.display = 'none'; // 清空复制提示
 
         const sourceUrl = sourceUrlEl.value.trim();
         const channelCount = parseInt(channelCountEl.value, 10);
@@ -128,11 +207,13 @@
         try {
           const result = generateChannelUrls(sourceUrl, channelCount);
           resultUrlsEl.value = result;
-          resultUrlsEl.select(); // 自动选中结果方便复制
         } catch (err) {
           errorMsgEl.textContent = '生成失败：' + err.message;
         }
       });
+
+      // 绑定复制按钮点击事件
+      copyBtn.addEventListener('click', copyResultContent);
     });
   </script>
 </body>
