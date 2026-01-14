@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLV多通道链接生成工具</title>
+  <style>
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    textarea, input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    /* 模拟图片类型输入框的样式 */
+    #resultUrls {
+      min-height: 200px;
+      background-color: #f8f9fa;
+      border: 1px dashed #ccc;
+      cursor: text;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .error {
+      color: #dc3545;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>FLV多通道链接生成工具</h2>
+    <div class="form-group">
+      <label for="sourceUrl">原始FLV链接：</label>
+      <textarea id="sourceUrl" placeholder="请粘贴你的原始FLV链接到这里"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="channelCount">生成通道数量：</label>
+      <input type="number" id="channelCount" value="8" min="1" max="30">
+    </div>
+    <button id="generateBtn">生成通道链接</button>
+    <div class="form-group" style="margin-top: 20px;">
+      <label for="resultUrls">生成结果（可直接复制）：</label>
+      <textarea id="resultUrls" readonly placeholder="生成的多通道链接会显示在这里"></textarea>
+    </div>
+    <div class="error" id="errorMsg"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sourceUrlEl = document.getElementById('sourceUrl');
+      const channelCountEl = document.getElementById('channelCount');
+      const generateBtn = document.getElementById('generateBtn');
+      const resultUrlsEl = document.getElementById('resultUrls');
+      const errorMsgEl = document.getElementById('errorMsg');
+
+      function generateChannelUrls(inputUrl, count) {
+        const domains = [
+          'video1.tcgjcx.com',
+          'video2.tcgjcx.com',
+          'video.tcgjcx.com',
+        ];
+        const baseUrl = new URL(inputUrl);
+        const results = [];
+        const match = baseUrl.pathname.match(/^(.*?)-(\d+)(-[^.]+)?\.flv$/);
+        
+        if (!match) {
+          throw new Error('无法解析通道号，请检查URL是否包含“xxx-数字(-后缀).flv”格式');
+        }
+
+        const basePath = match[1];
+        const extra = match[3] || '';
+        const suffix = '.flv';
+
+        for (let i = 1; i <= count; i++) {
+          const url = new URL(baseUrl.toString());
+          url.host = domains[(i - 1) % domains.length];
+          url.pathname = `${basePath}-${i}${extra}${suffix}`;
+          results.push(url.toString());
+        }
+        return results.join('\n');
+      }
+
+      generateBtn.addEventListener('click', function() {
+        resultUrlsEl.value = '';
+        errorMsgEl.textContent = '';
+
+        const sourceUrl = sourceUrlEl.value.trim();
+        const channelCount = parseInt(channelCountEl.value, 10);
+
+        if (!sourceUrl) {
+          errorMsgEl.textContent = '请先输入原始FLV链接';
+          return;
+        }
+        if (isNaN(channelCount) || channelCount < 1) {
+          errorMsgEl.textContent = '通道数量至少为1';
+          return;
+        }
+
+        try {
+          const result = generateChannelUrls(sourceUrl, channelCount);
+          resultUrlsEl.value = result;
+          resultUrlsEl.select(); // 自动选中结果方便复制
+        } catch (err) {
+          errorMsgEl.textContent = '生成失败：' + err.message;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
